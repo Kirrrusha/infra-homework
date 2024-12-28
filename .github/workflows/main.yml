@@ -44,8 +44,6 @@ jobs:
             .yarn/cache
             **/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies if needed
-        run: yarn install --frozen-lockfile --prefer-offline
       - name: Build
         run: yarn build
 
@@ -66,13 +64,11 @@ jobs:
             .yarn/cache
             **/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies if needed
-        run: yarn install --frozen-lockfile --prefer-offline
       - name: Run linters
         run: yarn linters
 
   deploy:
-    needs: [dependencies, build, linters]
+    needs: [build, linters]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -88,7 +84,5 @@ jobs:
             .yarn/cache
             **/node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies if needed
-        run: yarn install --frozen-lockfile --prefer-offline
       - name: Deploy
         run: yarn deploy
