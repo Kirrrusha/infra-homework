@@ -1,0 +1,87 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
+  build:
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+          cache: 'yarn'
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Build
+        run: yarn build
+
+  linters:
+    needs: dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+          cache: 'yarn'
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Run linters
+        run: yarn linters
+
+  deploy:
+    needs: [build, linters]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.11.0'
+          cache: 'yarn'
+      - name: Restore dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            **/node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Deploy
+        run: yarn deploy
