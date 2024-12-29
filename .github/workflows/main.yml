@@ -19,13 +19,6 @@ jobs:
           cache: 'yarn'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            .yarn/cache
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
 
   build:
     needs: dependencies
@@ -37,13 +30,6 @@ jobs:
         with:
           node-version: '22.11.0'
           cache: 'yarn'
-      - name: Restore dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            .yarn/cache
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Check node_modules
         run: ls node_modules || yarn install --frozen-lockfile
       - name: Build
@@ -59,13 +45,6 @@ jobs:
         with:
           node-version: '22.11.0'
           cache: 'yarn'
-      - name: Restore dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            .yarn/cache
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Check node_modules
         run: ls node_modules || yarn install --frozen-lockfile
       - name: Run linters
@@ -81,13 +60,6 @@ jobs:
         with:
           node-version: '22.11.0'
           cache: 'yarn'
-      - name: Restore dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            .yarn/cache
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: Check node_modules
         run: ls node_modules || yarn install --frozen-lockfile
       - name: Deploy
